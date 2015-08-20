@@ -1,0 +1,22 @@
+{
+  "name": "node-tools",
+  "description": "Various helper utilities",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Rafał Michalski <royal@advertine.com>",
+  "contributors": [],
+  "homepage": "https://github.com/advertine/node-tools",
+  "main": "js/index.js",
+  "scripts": {
+    "test": "tap test/js/test.*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/advertine/node-tools.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "tap": "*"
+  }
+}
