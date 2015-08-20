@@ -9,7 +9,8 @@ var fs = require('fs')
 var config = {
   cryptoAlgorithm: 'aes-256-cbc',
   signatureHmacAlgorithm: 'sha256',
-  entropyHmacAlgorithm: 'sha256'
+  entropyHmacAlgorithm: 'sha256',
+  entropyIterations: 16384
 };
 
 exports.config = config;
@@ -76,7 +77,7 @@ function createEntropy(password, salt, callback) {
   password || (password = crypto.randomBytes(6));
   salt     || (salt     = crypto.randomBytes(64));
 
-  crypto.pbkdf2(password, salt, 16384, 80, config.entropyHmacAlgorithm, callback);
+  crypto.pbkdf2(password, salt, config.entropyIterations, 80, config.entropyHmacAlgorithm, callback);
 }
 
 function extractKeyIv(entropy, callback) {
