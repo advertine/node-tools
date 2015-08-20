@@ -1,5 +1,5 @@
 /*
- * TOOL crypt
+ * TOOL encode
  *
  * Author: Rafal Michalski (c) 2015
  */

@@ -158,10 +158,13 @@ function decrypt(cipherKey, iv, hmacKey, dataEncrypted, algorithm, callback) {
 };
 
 function timingSafeComparison(buf1, buf2) {
-  var result = true, i = buf1.length;
-  while (i-- > 0) {
-    if (buf1[i] !== buf2[i])
-      result = false;
+  var len = buf1.length;
+  if (len !== buf2.length) {
+    return false;
   }
-  return result;
-};
+  var result = 0;
+  while (len-- > 0) {
+    result |= buf1[len] ^ buf2[len];
+  }
+  return result === 0;
+}
