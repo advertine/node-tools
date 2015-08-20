@@ -24,8 +24,6 @@ exports.createEncryptorDecryptor = createEncryptorDecryptor;
  * Create pair encryptor and decryptor functions using key loaded from entropy file.
  * If entropy file doesn't exitst creates new entropy.
  *
- * WARNING: This functions is vulnerable to race conditions. FIXME!
- *
  * @param {string} filePath - a path to entropy file
  * @param {string|Buffer} [password] - optional: pass null to create password
  * @param {string|Buffer} [salt] - optional: pass null to create salt
@@ -54,23 +52,52 @@ function createEncryptorDecryptor(cipherKey, iv, hmacKey, callback) {
 };
 
 function loadOrCreateKeyIv(filePath, password, salt, callback) {
-  fs.readFile(filePath, function(err, entropy) {
-    if (err) {
-      if (err.code !== 'ENOENT')
+  var retries = 10;
+  (function readEntropy(err) {
+
+    if (err && retries-- <= 0)
+      return callback(err);
+
+    fs.readFile(filePath, function(err, entropy) {
+      if (err && err.code !== 'ENOENT') {
         return callback(err);
-    }
-    if (entropy && entropy.length === 80) {
-      extractKeyIv(entropy, callback);
-    } else {
-      createEntropy(password, salt, function(err, entropy) {
-        if (err) return callback(err);
-        fs.writeFile(filePath, entropy, function(err) {
-          if (err) return callback(err);
+      }
+      if (entropy) {
+        if (entropy.length === 80) {
           extractKeyIv(entropy, callback);
-        });
-      });
-    }
-  });
+        } else if (entropy.length === 0) {
+          setTimeout(readEntropy, 50, new Error("entropy file found but it's empty"));
+        } else
+          callback(new Error("entropy file has incorrect size"));
+      } else {
+        fs.open(filePath, 'wx', function(err, fd) {
+          if (err)
+            return err.code === 'EEXIST' ? setTimeout(readEntropy, 50, err) : callback(err);
+
+          function cleanup(err) {
+            var args = arguments;
+            fs.close(fd, function() {
+              fs.unlink(filePath, function() {
+                callback(err);
+              });
+            });
+          }
+
+          createEntropy(password, salt, function(err, entropy) {
+            if (err) return cleanup(err);
+            fs.write(fd, entropy, 0, entropy.length, function(err, written) {
+              if (err) return cleanup(err);
+              if (written != entropy.length)
+                return cleanup(new Error("error writing entropy file"));
+              fs.close(fd, function() {
+                extractKeyIv(entropy, callback);
+              });
+            });
+          });
+        })
+      }
+    });
+  })();
 };
 
 function createEntropy(password, salt, callback) {
