@@ -3,21 +3,22 @@
  *
  * Author: Rafal Michalski (c) 2015
  */
+var path = require('path');
 exports.lazyLoadModules = lazyLoadModules;
 
-lazyLoadModules(exports, 'crypt encode promisify');
+lazyLoadModules(__dirname, exports, 'crypt encode promisify');
 
-function lazyLoadModules(object, names) {
+function lazyLoadModules(dirname, object, names) {
   if ('string' === typeof names)
     names = names.trim().split(/\s+/);
 
-  names.forEach(lazyLoadModuleInstall.bind(null, object));
+  names.forEach(lazyLoadModuleInstall.bind(null, dirname, object));
 }
 
-function lazyLoadModuleInstall(object, name) {
+function lazyLoadModuleInstall(dirname, object, name) {
   var mod;
   Object.defineProperty(object, name, {
-    get: function() { return mod || (mod = require('./' + name)) },
+    get: function() { return mod || (mod = require(path.join(dirname, name))) },
     enumerable: true,
     configurable: true
   });
