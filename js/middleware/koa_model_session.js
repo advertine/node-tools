@@ -17,8 +17,11 @@ var JsonModel = {
 };
 
 module.exports = function(session, options, app) {
+  if ('function' !== typeof session)
+    throw new Error("require session middleware factory as first argument");
+
   if (options && 'function' === typeof options.use) {
-    app = options, options = arguments[1];
+    app = options, options = arguments[2];
   }
 
   options || (options = {});
