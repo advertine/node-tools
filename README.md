@@ -50,3 +50,23 @@ delay(100, 'foo').then(function(arg) {
   assert.equals(arg, 'foo');
 });
 ```
+
+Middleware
+----------
+
+### koa_model_session
+
+```js
+var session = require('node-tools').middleware.
+              koa_model_session(require('koa-session'), {
+    // session options
+    model: {
+      encode: function({Object}) {...} // return {Buffer}
+      decode: function({Buffer}) {...} // return {Object}
+    },
+    crypt: {
+      encrypt: function({Buffer}){...} // return {Buffer}
+      decrypt: function({Buffer}){...} // return {Buffer}
+    }
+  }, app);
+```

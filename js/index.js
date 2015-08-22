@@ -8,6 +8,9 @@ exports.lazyLoadModules = lazyLoadModules;
 
 lazyLoadModules(__dirname, exports, 'crypt encode promisify');
 
+var middleware = exports.middleware = {};
+lazyLoadModules(path.join(__dirname, 'middleware'), middleware, 'koa_model_session');
+
 function lazyLoadModules(dirname, object, names) {
   if ('string' === typeof names)
     names = names.trim().split(/\s+/);
