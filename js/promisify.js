@@ -3,19 +3,7 @@
  *
  * Author: Rafal Michalski (c) 2015
  */
-var Promise;
-
-if (['bluebird', 'promise']
-    .every(function(module) {
-      try {
-         Promise = require(module);
-      } catch(e) {
-        return true;
-      }
-    })) Promise = global.Promise;
-
-if ('function' !== typeof Promise)
-  throw new Error("no promise implementation found");
+var Promise = require('./promise');
 
 module.exports = function promisify(fn) {
   fn = getOriginFunction(fn);

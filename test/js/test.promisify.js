@@ -4,7 +4,7 @@
  * Author: Rafal Michalski (c) 2015
  */
 var test = require("tap").test
-
+var Promise = require('../../js/promise');
 var promisify = require("../../js/index").promisify;
 
 test("should be a function", function(t) {
