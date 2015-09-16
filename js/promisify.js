@@ -3,7 +3,19 @@
  *
  * Author: Rafal Michalski (c) 2015
  */
-var slice = Array.prototype.slice;
+var Promise;
+
+if (['bluebird', 'promise']
+    .every(function(module) {
+      try {
+         Promise = require(module);
+      } catch(e) {
+        return true;
+      }
+    })) Promise = global.Promise;
+
+if ('function' !== typeof Promise)
+  throw new Error("no promise implementation found");
 
 module.exports = function promisify(fn) {
   fn = getOriginFunction(fn);
@@ -11,7 +23,7 @@ module.exports = function promisify(fn) {
   var arity = fn.length - 1;
 
   if (arity < 0)
-    throw new TypeError("promisify: function should have at least callback argument");
+    throw new TypeError("promisify: function should have at least callback argument defined");
 
   var args = new Array(arity);
 
@@ -20,27 +32,27 @@ module.exports = function promisify(fn) {
 
   args = args.join('') + 'cb';
 
-  eval('var wrap = function ' + fn.name + '(' + args + ') { \
-    if (!cb) {                                              \
-      var promise = new Promise(function(resolve, reject) { \
-        cb = function(err, res) {                           \
-          if (err) reject(err); else {                      \
-            if (arguments.length > 2)                       \
-              res = slice.call(arguments, 1);               \
-            resolve(res);                                   \
-          }                                                 \
-        };                                                  \
-      });                                                   \
-    }                                                       \
-    try {                                                   \
-      fn.call(this,' + args + ');                           \
-    } catch(err) {                                          \
-      cb(err);                                              \
-    }                                                       \
-    return promise;                                         \
-  }');
+  var wrap = new Function('Promise', 'slice', 'fn', 
+    'return function ' + fn.name + '(' + args + ') { \
+      if (!cb) {                                              \
+        var promise = new Promise(function(resolve, reject) { \
+          cb = function(err, res) {                           \
+            if (err) reject(err); else {                      \
+              if (arguments.length > 2)                       \
+                res = slice.call(arguments, 1);               \
+              resolve(res);                                   \
+            }                                                 \
+          };                                                  \
+        });                                                   \
+      }                                                       \
+      try {                                                   \
+        fn.call(this,' + args + ');                           \
+      } catch(err) {                                          \
+        cb(err);                                              \
+      }                                                       \
+      return promise;                                         \
+    }')(Promise, Array.prototype.slice, fn);
 
-  args = void(0);
   wrap._origin_fn = fn;
   return wrap;
 }

@@ -38,10 +38,14 @@ encode.decode('AYD_-g', 'url').equals(new Buffer([1,128,255,250]))
 Promisify
 ---------
 
+This implementation allows to omit original function arguments.
+(e.g.: the bluebird's doesn't).
+
+
 ```js
 var promisify = require('node-tools').promisify;
 var delay = promisify(function delay(wait, arg, callback) {
-  setTimeout(callback, wait, null, arg);
+  setTimeout(callback, wait|0, null, arg);
 });
 // with callback like original function
 delay(100, 'foo', function(err, arg) {
@@ -50,6 +54,13 @@ delay(100, 'foo', function(err, arg) {
 // without callback returns promise
 delay(100, 'foo').then(function(arg) {
   assert.equals(arg, 'foo');
+});
+// may omit last arguments (or all)
+delay(100).then(function(arg) {
+  assert.equals(arg, undefined);
+});
+delay().then(function(arg) {
+  assert.equals(arg, undefined);
 });
 ```
 

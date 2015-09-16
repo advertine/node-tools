@@ -90,7 +90,7 @@ test("should promisify thunk throwing error", function(t) {
 test("should not promisify function without callback argument", function(t) {
   t.throws(function() {
     promisify(function empty() {});
-  }, {message: "promisify: function should have at least callback argument"});
+  }, {message: "promisify: function should have at least callback argument defined"});
   t.end();
 });
 
@@ -117,6 +117,33 @@ test("should promisify many argument function", function(t) {
       t.fail('reject should not be called');
     })
   });
+});
+
+test("should allow omiting arguments of promisified function", function(t) {
+  t.plan(4);
+
+  var thunk = promisify(function thunk(a, b, next) { 
+    setTimeout(next, 100, null, a, b);
+  });
+
+  t.strictEqual(thunk.name, 'thunk');
+  t.strictEqual(thunk.length, 3);
+
+  Promise.all([
+    thunk('foo').then(function(res) {
+      t.deepEqual(res, ['foo', void(0)]);
+    }, function(err) {
+      t.ifErr(err);
+      t.fail('reject should not be called');
+    }),
+    thunk().then(function(res) {
+      t.deepEqual(res, [void(0), void(0)]);
+    }, function(err) {
+      t.ifErr(err);
+      t.fail('reject should not be called');
+    })
+  ]);
+
 });
 
 test("should promisify pass context", function(t) {
