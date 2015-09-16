@@ -1,6 +1,8 @@
 Various Node Utils
 ==================
 
+The utilities in this module are lazily loaded so they don't pollute memory unless needed.
+
 Crypt
 -----
 
@@ -69,4 +71,34 @@ var session = require('node-tools').middleware.
       decrypt: function({Buffer}){...} // return {Buffer}
     }
   }, app);
+```
+
+Intervals
+---------
+
+```js
+var parse = require('node-tools').intervals.parseIntervalMs;
+parse(10)         === 10;
+parse("10")       === 10;
+parse("10 ms")    === 10;
+parse("10millis") === 10;
+parse("1s")       === 1000;
+parse("1 second") === 1000;
+parse("2.5m")     === 2500*60;
+parse("2.5 min")  === 2500*60;
+parse("3 h")      === 3000*60*60;
+parse("3hours")   === 3000*60*60;
+parse("4.2d")     === 4200*60*60*24;
+parse("5 days")   === 5000*60*60*24;
+parse("6w")       === 6000*60*60*24*7;
+parse("6 weeks")  === 6000*60*60*24*7;
+```
+
+Interpolate
+-----------
+
+```js
+var interpolate = require('node-tools').interpolate.interpolate2;
+interpolate("foo ${bar}", {bar: 42}) === "foo 42";
+interpolate("foo ${bar.baz}", {bar: {baz: 42}}) === "foo 42";
 ```
