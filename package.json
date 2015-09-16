@@ -14,7 +14,9 @@
     "type": "git",
     "url": "git+ssh://git@github.com/advertine/node-tools.git"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "bluebird": "^2",
+    "promise": "*"
   },
   "devDependencies": {
     "tap": "*"
