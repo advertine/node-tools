@@ -23,6 +23,29 @@ crypt.loadOrCreateEncryptorDecryptor('/path/to/entropy_key', null, null, functio
 });
 ```
 
+Domains
+-------
+
+Create domain name pattern similar to cookie domain patterns.
+
+```js
+var domains = require('node-tools').domains;
+var patterns = {
+  ".foo.com":    "anything ending with foo.com",
+  "www.foo.com": "home page",
+  "*.bar.com":   "any subdomain of bar.com",
+  "bar.com":     "root domain of bar.com",
+  "*":           "anything else"
+};
+var matcher = domains.createDomainMatcher(patterns, true);
+assert.strictEqual(matcher("www.foo.com"),     "home page");
+assert.strictEqual(matcher("foo.com"),         "anything ending with foo.com");
+assert.strictEqual(matcher("foe.fee.foo.com"), "anything ending with foo.com");
+assert.strictEqual(matcher("www.bar.com"),     "any subdomain of bar.com");
+assert.strictEqual(matcher("bar.com"),         "root domain of bar.com");
+assert.strictEqual(matcher("baz.com"),         "anything else");
+```
+
 Encode
 ------
 
@@ -32,56 +55,6 @@ var encode = require('node-tools').encode;
 encode.encode(new Buffer([1,128,255,250]), 'base64urlsafe') === 'AYD_-g'
 encode.encode(new Buffer([1,2,3,4]), 'hex') === '01020304'
 encode.decode('AYD_-g', 'url').equals(new Buffer([1,128,255,250]))
-```
-
-
-Promisify
----------
-
-This implementation allows to omit original function arguments.
-(e.g.: the bluebird's doesn't).
-
-
-```js
-var promisify = require('node-tools').promisify;
-var delay = promisify(function delay(wait, arg, callback) {
-  setTimeout(callback, wait|0, null, arg);
-});
-// with callback like original function
-delay(100, 'foo', function(err, arg) {
-  assert.equals(arg, 'foo');  
-});
-// without callback returns promise
-delay(100, 'foo').then(function(arg) {
-  assert.equals(arg, 'foo');
-});
-// may omit last arguments (or all)
-delay(100).then(function(arg) {
-  assert.equals(arg, undefined);
-});
-delay().then(function(arg) {
-  assert.equals(arg, undefined);
-});
-```
-
-Middleware
-----------
-
-### koa_model_session
-
-```js
-var session = require('node-tools').middleware.
-              koa_model_session(require('koa-session'), {
-    // session options
-    model: {
-      encode: function({Object}) {...} // return {Buffer}
-      decode: function({Buffer}) {...} // return {Object}
-    },
-    crypt: {
-      encrypt: function({Buffer}){...} // return {Buffer}
-      decrypt: function({Buffer}){...} // return {Buffer}
-    }
-  }, app);
 ```
 
 Intervals
@@ -112,4 +85,53 @@ Interpolate
 var interpolate = require('node-tools').interpolate.interpolate2;
 interpolate("foo ${bar}", {bar: 42}) === "foo 42";
 interpolate("foo ${bar.baz}", {bar: {baz: 42}}) === "foo 42";
+```
+
+Middleware
+----------
+
+### koa_model_session
+
+```js
+var session = require('node-tools').middleware.
+              koa_model_session(require('koa-session'), {
+    // session options
+    model: {
+      encode: function({Object}) {...} // return {Buffer}
+      decode: function({Buffer}) {...} // return {Object}
+    },
+    crypt: {
+      encrypt: function({Buffer}){...} // return {Buffer}
+      decrypt: function({Buffer}){...} // return {Buffer}
+    }
+  }, app);
+```
+
+Promisify
+---------
+
+This implementation allows to omit original function arguments.
+(e.g.: the bluebird's doesn't).
+
+
+```js
+var promisify = require('node-tools').promisify;
+var delay = promisify(function delay(wait, arg, callback) {
+  setTimeout(callback, wait|0, null, arg);
+});
+// with callback like original function
+delay(100, 'foo', function(err, arg) {
+  assert.equals(arg, 'foo');
+});
+// without callback returns promise
+delay(100, 'foo').then(function(arg) {
+  assert.equals(arg, 'foo');
+});
+// may omit last arguments (or all)
+delay(100).then(function(arg) {
+  assert.equals(arg, undefined);
+});
+delay().then(function(arg) {
+  assert.equals(arg, undefined);
+});
 ```
