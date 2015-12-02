@@ -26,7 +26,7 @@ crypt.loadOrCreateEncryptorDecryptor('/path/to/entropy_key', null, null, functio
 Domains
 -------
 
-Create domain name pattern similar to cookie domain patterns.
+Create domain name lookup similar to cookie domain pattern matching.
 
 ```js
 var domains = require('node-tools').domains;
