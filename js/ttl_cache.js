@@ -30,7 +30,6 @@ TtlCache.prototype.get = function(key) {
   var value = this.cache.get(key);
   if (value instanceof TtlValue) {
     if (value.expire <= now()) {
-      this.cache.delete(key);
       return;
     } else
       return value.value;
