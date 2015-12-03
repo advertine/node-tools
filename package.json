@@ -14,6 +14,11 @@
     "type": "git",
     "url": "git+ssh://git@github.com/advertine/node-tools.git"
   },
+  "dependencies": {
+    "debug": "*",
+    "mailparser": "^0.5.3",
+    "sendgrid": "^2.0.0"
+  },
   "peerDependencies": {
     "bluebird": "^2",
     "promise": "*"
