@@ -100,15 +100,16 @@ function instantiateEmail(name, args, callback) {
   ensureEmail(name, function(err, email) {
     if (err) return callback(err);
 
-    var body;
+    var body, subject;
 
     try {
+      subject = substitute(email.subject, args);
       body = substitute(email.text, args);
     } catch(e) {
       return callback(e);
     }
  
-    callback(null, email.from[0].address, email.headers.from, email.subject, body);
+    callback(null, email.from[0].address, email.headers.from, subject, body);
   });
 }
 
