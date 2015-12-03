@@ -6,7 +6,7 @@
 var path = require('path');
 exports.lazyLoadModules = lazyLoadModules;
 
-lazyLoadModules(__dirname, exports, 'crypt domains encode interpolate intervals promisify regexp request_queue');
+lazyLoadModules(__dirname, exports, 'crypt domains encode interpolate intervals promisify regexp request_queue ttl_cache');
 
 var middleware = exports.middleware = {};
 lazyLoadModules(path.join(__dirname, 'middleware'), middleware, 'koa_model_session');
