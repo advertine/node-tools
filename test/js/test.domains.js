@@ -181,6 +181,24 @@ test("domains", function(suite) {
     t.strictEqual(domains.createDomainMatcher.name, 'createDomainMatcher');
     t.strictEqual(domains.createDomainMatcher.length, 2);
 
+    t.test('should create empty matcher', function(t) {
+      var matcher = domains.createDomainMatcher({});
+      t.type(matcher, 'function');
+      t.strictEqual(matcher.name, 'matcher');
+      t.strictEqual(matcher.length, 2);
+
+      t.strictEqual(matcher('www.foo.bar'), void(0));
+      t.strictEqual(matcher('foo.bar'), void(0));
+      t.strictEqual(matcher('fee.foo.bar'), void(0));
+      t.strictEqual(matcher('zanzi.bar'), void(0));
+      t.strictEqual(matcher('www.zanzi.bar'), void(0));
+      t.strictEqual(matcher('bar.foo'), void(0));
+      t.strictEqual(matcher('bar.foo', null), null);
+      t.strictEqual(matcher('bar.foo', false), false);
+
+      t.end();
+    });
+
     t.test('should create matcher', function(t) {
       var matcher = domains.createDomainMatcher({
         'www.foo.bar': 1,
