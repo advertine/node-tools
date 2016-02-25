@@ -88,9 +88,11 @@ exports.sendEmail = function(to, emailType, args, callback) {
       text:     body
     });
 
-    debug(email);
+    if (headerFrom) {
+      email.addHeader('From', headerFrom);
+    }
 
-    //email.addHeader('From', headerFrom);
+    debug('%j', email);
 
     sendgrid.send(email, callback);
   });
