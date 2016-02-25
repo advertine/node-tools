@@ -115,7 +115,7 @@ function instantiateEmail(name, args, callback) {
 
 function ensureEmail(name, callback) {
   emails.getOrWillSet(name, function(next) {
-    mailparser = new MailParser();
+    var mailparser = new MailParser();
     mailparser.on("end", function(email) {
       next(null, email);
     });
