@@ -119,6 +119,31 @@ test("should promisify many argument function", function(t) {
   });
 });
 
+test("should promisify many argument function with single resolve argument", function(t) {
+  t.plan(7);
+
+  var thunk = promisify(function thunk(a, b, next) { 
+    setTimeout(next, 100, null, a, b);
+  }, true);
+
+  t.strictEqual(thunk.name, 'thunk');
+  t.strictEqual(thunk.length, 3);
+
+  thunk('foo', 'bar', function(err, res1, res2) {
+    t.ifErr(err);
+    t.strictEqual(res1, 'foo');
+    t.strictEqual(res2, 'bar');
+    var promise = thunk('foo', 'bar');
+    t.type(promise, Promise);
+    promise.then(function(res) {
+      t.deepEqual(res, 'foo');
+    }, function(err) {
+      t.ifErr(err);
+      t.fail('reject should not be called');
+    })
+  });
+});
+
 test("should allow omiting arguments of promisified function", function(t) {
   t.plan(4);
 

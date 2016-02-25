@@ -5,7 +5,7 @@
  */
 var Promise = require('./promise');
 
-module.exports = function promisify(fn) {
+module.exports = function promisify(fn, resolveFirstOnly) {
   fn = getOriginFunction(fn);
 
   var arity = fn.length - 1;
@@ -21,14 +21,15 @@ module.exports = function promisify(fn) {
   args = args.join('') + 'cb';
 
   var wrap = new Function('Promise', 'slice', 'fn', 
-    'return function ' + fn.name + '(' + args + ') { \
+    'return function ' + fn.name + '(' + args + ') {          \
       if (!cb) {                                              \
         var promise = new Promise(function(resolve, reject) { \
           cb = function(err, res) {                           \
-            if (err) reject(err); else {                      \
+            if (err) reject(err); else {'
+    + (resolveFirstOnly ? '' : '                              \
               if (arguments.length > 2)                       \
                 res = slice.call(arguments, 1);               \
-              resolve(res);                                   \
+    ') + '    resolve(res);                                   \
             }                                                 \
           };                                                  \
         });                                                   \
