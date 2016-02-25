@@ -1,7 +1,7 @@
 {
   "name": "node-tools",
   "description": "Various helper utilities",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": "Rafał Michalski <royal@advertine.com>",
   "contributors": [],
