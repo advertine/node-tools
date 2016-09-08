@@ -135,3 +135,30 @@ delay().then(function(arg) {
   assert.equals(arg, undefined);
 });
 ```
+
+Util
+----
+
+Type check functions:
+
+```js
+var util = require('node-tools').util;
+util.isArray([])
+util.isBoolean(true)
+util.isBuffer(new Buffer(0))
+util.isDate(new Date())
+util.isError(new Error("foo"))
+util.isFunction(function() {})
+util.isNull(null)
+util.isNullOrUndefined(null)
+util.isNumber(1)
+util.isObject(new Foo)
+util.isPlainObject({})
+util.isPrimitive('bar')
+util.isRegExp(/regexp/)
+util.isScalar(1)
+util.isString('foo')
+util.isSymbol(Symbol('foo'))
+util.isTypedArray(new Uint32Array(0))
+util.isUndefined(void(0))
+```
