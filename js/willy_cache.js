@@ -34,9 +34,18 @@ GetSetWilly.prototype.willSet = function(key, generator, callback) {
   });
 };
 
+GetSetWilly.prototype.willSetOrWillGet = function(key, generator, callback) {
+  var value = this.cache.get(key);
+
+  if (value instanceof RequestQueue) {
+    value.push(callback);
+  } else {
+    this.willSet(key, generator, callback);
+  }
+};
+
 GetSetWilly.prototype.getOrWillSet = function(key, generator, callback) {
-  var cache = this.cache,
-      value = cache.get(key);
+  var value = this.cache.get(key);
 
   if ('undefined' === typeof value) {
     this.willSet(key, generator, callback);

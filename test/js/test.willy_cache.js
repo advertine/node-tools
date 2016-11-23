@@ -131,6 +131,36 @@ test("should get wait or create cache entry", function(t) {
   });
 });
 
+test("should create only first one", function(t) {
+  var cache = new GetSetWilly();
+  t.plan(8);
+
+  cache.set('key', 'foo');
+
+  cache.willSetOrWillGet('key', function generator(callback) {
+    t.type(callback, 'function');
+    t.strictEqual(callback.length, 2);
+
+    setImmediate(callback, null, 'bar');
+
+    cache.willGet('key', function(err, value) {
+      t.strictEqual(err, null);
+      t.strictEqual(value, 'bar');
+    });
+
+    cache.willSetOrWillGet('key', function generator() {
+      t.fail('the second generator should not be called');
+    }, function(err, value) {
+      t.strictEqual(err, null);
+      t.strictEqual(value, 'bar');
+    });
+
+  }, function(err, value) {
+    t.strictEqual(err, null);
+    t.strictEqual(value, 'bar');
+  });
+});
+
 test("should iterate and clear cache entries", function(t) {
   var cache = new GetSetWilly();
   cache.set('foo', 'fee');
