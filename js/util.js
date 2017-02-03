@@ -5,9 +5,9 @@
  */
 "use strict";
 
-const proto = Object.prototype;
-const toString = proto.toString;
-const getPrototypeOf = Object.getPrototypeOf;
+var proto = Object.prototype;
+var toString = proto.toString;
+var getPrototypeOf = Object.getPrototypeOf;
 
 /**
  * undefined type check.
